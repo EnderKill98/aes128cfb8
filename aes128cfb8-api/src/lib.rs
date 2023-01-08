@@ -73,10 +73,8 @@ impl<T: Write + Read> Read for CryptorStreamRead<T> {
         let read_count = self.inner.read(&mut read_buf)?;
         //let read_dec_count = self.decryptor.update(&read_buf[..read_count], buf)?;
         self.conn.write_all(&read_buf[..read_count])?;
-        let mut read_dec_count_buf = [0u8; 4];
-        self.conn.read_exact(&mut read_dec_count_buf)?;
-        let read_dec_count = u32::from_be_bytes(read_dec_count_buf) as usize;
-        self.conn.read_exact(&mut buf[..read_dec_count])?;
+        let read_dec_count = read_count; // Since it's a stream cipher, it should always be the same size
+        self.conn.read_exact(&mut buf[..read_count])?;
 
         #[cfg(feature = "log")]
         log::debug!(
@@ -144,14 +142,9 @@ impl<T: Write + Read> CryptorStreamWrite<T> {
 impl<T: Write + Read> Write for CryptorStreamWrite<T> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let mut write_buf = vec![0u8; buf.len()];
-        //let write_count = self.encryptor.update(&buf, &mut write_buf)?;
         self.conn.write_all(buf)?;
-        let mut write_count_buf = [0u8; 4];
-        self.conn.read_exact(&mut write_count_buf)?;
-        let write_count = u32::from_be_bytes(write_count_buf) as usize;
-        self.conn.read_exact(&mut write_buf[..write_count])?;
-
-        let final_count = self.inner.write(&write_buf[..write_count])?;
+        self.conn.read_exact(&mut write_buf)?;
+        self.inner.write_all(&write_buf)?;
         #[cfg(feature = "log")]
         log::debug!(
             "Wanted write {} bytes, encrypted {} bytes, passed {} bytes",
@@ -159,7 +152,7 @@ impl<T: Write + Read> Write for CryptorStreamWrite<T> {
             write_count,
             final_count
         );
-        Ok(final_count)
+        Ok(buf.len())
     }
     fn flush(&mut self) -> std::io::Result<()> {
         self.inner.flush()

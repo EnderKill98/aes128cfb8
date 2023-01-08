@@ -79,10 +79,14 @@ async fn handle_client(mut socket: UnixStream, addr: &SocketAddr) -> Result<()> 
         let write_bytes = crypter
             .update(&in_buf[..bytes_read], &mut out_buf)
             .context("Perform en-/decryption")?;
-        socket
-            .write_u32(write_bytes as u32)
-            .await
-            .context("Write processed bytes len")?;
+        ensure!(
+            bytes_read == write_bytes,
+            "Streaming cipher (CFB8) should always have same bytes for in and out!"
+        );
+        /*socket
+        .write_u32(write_bytes as u32)
+        .await
+        .context("Write processed bytes len")?;*/
         socket
             .write_all(&out_buf[..write_bytes])
             .await
