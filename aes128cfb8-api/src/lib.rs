@@ -62,7 +62,7 @@ impl<T: Write + Read> CryptorStreamRead<T> {
         self.conn.into_raw_fd()
     }
 
-    pub fn as_raw_fd(self) -> RawFd {
+    pub fn as_raw_fd(&self) -> RawFd {
         self.conn.as_raw_fd()
     }
 }
@@ -134,7 +134,7 @@ impl<T: Write + Read> CryptorStreamWrite<T> {
         self.conn.into_raw_fd()
     }
 
-    pub fn as_raw_fd(self) -> RawFd {
+    pub fn as_raw_fd(&self) -> RawFd {
         self.conn.as_raw_fd()
     }
 }
