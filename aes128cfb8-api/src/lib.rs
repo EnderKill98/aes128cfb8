@@ -57,13 +57,17 @@ impl<T: Write + Read> CryptorStreamRead<T> {
     pub fn into_inner_and_raw_fd(self) -> (T, RawFd) {
         (self.inner, self.conn.into_raw_fd())
     }
+}
 
-    pub fn into_raw_fd(self) -> RawFd {
-        self.conn.into_raw_fd()
-    }
-
-    pub fn as_raw_fd(&self) -> RawFd {
+impl<T> AsRawFd for CryptorStreamRead<T> {
+    fn as_raw_fd(&self) -> RawFd {
         self.conn.as_raw_fd()
+    }
+}
+
+impl<T> IntoRawFd for CryptorStreamRead<T> {
+    fn into_raw_fd(self) -> RawFd {
+        self.conn.into_raw_fd()
     }
 }
 
@@ -136,6 +140,18 @@ impl<T: Write + Read> CryptorStreamWrite<T> {
 
     pub fn as_raw_fd(&self) -> RawFd {
         self.conn.as_raw_fd()
+    }
+}
+
+impl<T> AsRawFd for CryptorStreamWrite<T> {
+    fn as_raw_fd(&self) -> RawFd {
+        self.conn.as_raw_fd()
+    }
+}
+
+impl<T> IntoRawFd for CryptorStreamWrite<T> {
+    fn into_raw_fd(self) -> RawFd {
+        self.conn.into_raw_fd()
     }
 }
 
