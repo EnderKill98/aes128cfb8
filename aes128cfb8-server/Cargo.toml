@@ -18,4 +18,5 @@ clap = { version = "4.0.32", features = [ "derive" ] }
 aes128cfb8-api = { path = "../aes128cfb8-api" }
 
 [features]
-disable_debug = [ ]
+default = [ "verbose" ]
+verbose = [ ]

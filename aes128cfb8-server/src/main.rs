@@ -91,7 +91,7 @@ async fn handle_client(mut socket: UnixStream, addr: &SocketAddr) -> Result<()> 
             .write_all(&out_buf[..write_bytes])
             .await
             .context("Write processed bytes")?;
-        #[cfg(not(feature = "disable_debug"))]
+        #[cfg(feature = "verbose")]
         debug!("[{addr:?}] Processed {bytes_read} bytes.");
     }
 }
