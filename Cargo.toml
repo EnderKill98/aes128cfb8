@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+  "aes128cfb8-api",
+  "aes128cfb8-server",
+]
